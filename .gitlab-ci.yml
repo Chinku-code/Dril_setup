@@ -1,0 +1,22 @@
+
+stages:
+  - dc-down
+  - dc-up
+  - dr-down
+  - dr-up
+include:
+  - project: 'epay/devops/ci-templates'
+    ref: feature/Omkar_Drill_Activity
+    file: 'cd/dc-scale-up/scale-up.yml'
+
+  - project: 'epay/devops/ci-templates'
+    ref: feature/Omkar_Drill_Activity
+    file: 'cd/dc-scale-down/scale-down.yml'
+
+  - project: 'epay/devops/ci-templates'
+    ref: feature/Omkar_Drill_Activity
+    file: 'cd/dr-scale-up/scale-up.yml'
+
+  - project: 'epay/devops/ci-templates'
+    ref: feature/Omkar_Drill_Activity
+    file: 'cd/dr-scale-down/scale-down.yml'
