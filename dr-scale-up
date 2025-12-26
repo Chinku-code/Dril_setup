@@ -1,0 +1,35 @@
+dr_scale_up:
+  stage: dr-up
+  image: registry.dev.sbiepay.sbi:8443/ubi9/ochelm:03122024
+  when: manual
+  variables:
+    ENV: "dev"
+    REPLICAS: "1"
+  script:
+    - |
+      set -euo pipefail
+      echo "Starting SCALE operation"
+      echo "Environment: ${ENV}"
+
+      oc login https://api.dev.sbiepay.sbi:6443 \
+        --token="${DEV_TOKEN}" \
+        --insecure-skip-tls-verify
+
+      declare -A NS_DEPLOYMENTS
+      NS_DEPLOYMENTS["dev-admin"]="admin-adminservice admin-portal-adminportalservice"
+      # NS_DEPLOYMENTS["dev-transaction"]="payment-paymentservice orderhash-orderhashtest txn-transactionservice"
+      # NS_DEPLOYMENTS["dev-frontend"]="merchant-int-epay-merchant-integration-doc merchantfe-merchant-frontend transactionfe-transaction-frontend websitefe-epay-website integration-integrationservice"
+      # NS_DEPLOYMENTS["dev-kms"]="kms-kmsservice"
+      # NS_DEPLOYMENTS["dev-rns"]="ops-operationsservice refund-refundservice"
+      # NS_DEPLOYMENTS["dev-simulators"]="demo-epaymerchantsimulator"
+      # NS_DEPLOYMENTS["dev-notification"]="notify-notificationservice"
+      # NS_DEPLOYMENTS["dev-merchant"]="merchant-merchantservice report-reportservice"
+
+      for namespace in "${!NS_DEPLOYMENTS[@]}"; do
+        for deploy in ${NS_DEPLOYMENTS[$namespace]}; do
+          echo "Scaling deployment ${deploy} in ${namespace} to ${REPLICAS}"
+          oc scale deployment/${deploy} -n "${namespace}" --replicas="${REPLICAS}"
+        done
+      done
+
+      echo "Scale operation completed"
