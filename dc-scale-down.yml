@@ -1,5 +1,5 @@
-dr_scale_down:
-  stage: dr-down
+dc_scale_down:
+  stage: dc-down
   image: registry.dev.sbiepay.sbi:8443/ubi9/ochelm:03122024
   when: manual
   variables:
@@ -33,4 +33,3 @@ dr_scale_down:
       done
 
       echo "Scale operation completed"
-
