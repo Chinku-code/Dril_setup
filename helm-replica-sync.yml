@@ -1,0 +1,28 @@
+helm_scale_sync:
+  stage: scale
+  image: registry.dev.sbiepay.sbi:8443/ubi9/ochelm:03122024
+  when: manual
+  variables:
+    RELEASE_NAME: ""     # e.g. admin-adminservice
+    CHART_PATH: ""      # e.g. ./charts/admin-adminservice
+    NAMESPACE: ""       # e.g. dev-admin
+    REPLICAS: "0"       # 0 = down, 1 = up
+  script:
+    - |
+      set -euo pipefail
+
+      echo "🔁 Syncing replicaCount with Helm"
+      echo "Release   : ${RELEASE_NAME}"
+      echo "Namespace : ${NAMESPACE}"
+      echo "Replicas  : ${REPLICAS}"
+
+      oc login https://api.dev.sbiepay.sbi:6443 \
+        --token="${DEV_TOKEN}" \
+        --insecure-skip-tls-verify
+
+      helm upgrade ${RELEASE_NAME} ${CHART_PATH} \
+        -n ${NAMESPACE} \
+        --reuse-values \
+        --set replicaCount=${REPLICAS}
+
+      echo "✅ Helm values updated successfully"
